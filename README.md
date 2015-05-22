@@ -3,6 +3,10 @@ log-reporter
 
 A simple tool for generate report from log file and send with email.
 
+## Require
+
+Unix-like system with `tail`, `grep`, `cat` etc.
+
 ## Install
 
 ```bash
