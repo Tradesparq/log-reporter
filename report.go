@@ -7,14 +7,17 @@ import (
 )
 
 const REPORT_TEMPLATE = `
-LineNumber: {{.LineNumber}}
-ErrorNumber: {{.ErrorNumber}}
+LineNumber ({{.LineNumber.Cmd}}):
+{{.LineNumber.Out}}
 
-Tail:
-{{.Tail}}
+ErrorNumber ({{.ErrorNumber.Cmd}}):
+{{.ErrorNumber.Out}}
 
-ErrorSample:
-{{.ErrorSample}}
+Tail ({{.Tail.Cmd}}):
+{{.Tail.Out}}
+
+ErrorSample ({{.ErrorSample.Cmd}}):
+{{.ErrorSample.Out}}
 `
 
 var commands = map[string]string{
@@ -24,24 +27,31 @@ var commands = map[string]string{
 	"ErrorSample": "grep -i error {{.Filename}} | head -n {{.Nerror}}",
 }
 
+type Action struct {
+	Cmd string
+	Out string
+}
+
 type Report struct {
-	LineNumber  string
-	Tail        string
-	ErrorNumber string
-	ErrorSample string
+	LineNumber  Action
+	Tail        Action
+	ErrorNumber Action
+	ErrorSample Action
 }
 
 func NewReport(l Log) (Report, error) {
 	var r Report
 	for key, cmd := range commands {
-		out, err := l.Exec(cmd)
+		c, out, err := l.Exec(cmd)
 		if err != nil {
 			return r, err
 		}
 
+		a := Action{c, out}
+
 		v := reflect.ValueOf(&r)
 		f := v.Elem().FieldByName(key)
-		f.SetString(out)
+		f.Set(reflect.ValueOf(a))
 	}
 
 	return r, nil

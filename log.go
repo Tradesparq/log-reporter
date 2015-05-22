@@ -13,13 +13,13 @@ type Log struct {
 	Nerror   uint
 }
 
-func (l *Log) Exec(command string) (string, error) {
+func (l *Log) Exec(command string) (string, string, error) {
 	var b bytes.Buffer
 	t := template.Must(template.New("cmd").Parse(command))
 
 	err := t.Execute(&b, l)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
 	cmd := exec.Command("sh", "-c", b.String())
@@ -27,5 +27,5 @@ func (l *Log) Exec(command string) (string, error) {
 	cmd.Stdout = &out
 	err = cmd.Run()
 
-	return out.String(), err
+	return b.String(), out.String(), err
 }
