@@ -11,6 +11,7 @@ Unix-like system with `tail`, `grep`, `cat` etc.
 
 ```bash
 go get github.com/cirias/log-reporter
+go get github.com/Tradesparq/log-reporter
 ```
 
 ## Usage
